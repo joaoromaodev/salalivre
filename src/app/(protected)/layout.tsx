@@ -19,6 +19,9 @@ export default function ProtectedLayout({
             <Button render={<Link href="/novo" />} variant="ghost" size="sm">
               Novo
             </Button>
+            <Button render={<Link href="/qrcode" />} variant="ghost" size="sm">
+              QR
+            </Button>
             <form action={logoutAction}>
               <Button type="submit" variant="ghost" size="sm">
                 Sair

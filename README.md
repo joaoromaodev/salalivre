@@ -44,9 +44,12 @@ de tolerância entre reservas — não é uma validação só de front-end.
   próximas reservas com busca por nome ou setor.
 - **Editar / cancelar**: a partir de qualquer reserva listada, com
   confirmação antes de cancelar.
-- **Acesso por senha única**: todas as rotas — inclusive a consulta da
-  agenda — exigem um cookie de sessão assinado; sem ele, redireciona para
-  `/login`.
+- **Acesso por senha única**: as rotas internas exigem um cookie de sessão
+  assinado; sem ele, redireciona para `/login`.
+- **Tela pública da porta (QR code)**: a rota `/sala` é pública e read-only —
+  mostra só os horários **livres/ocupados**, sem nome, setor ou matrícula de
+  quem reservou. A página interna `/qrcode` gera um QR code apontando para
+  essa tela, pronto para imprimir e colar na porta da sala.
 
 ## Regras de negócio
 
@@ -85,12 +88,16 @@ src/
     conflito.ts                # checagem de conflito em JS (espelha o banco)
     reservas.ts                 # queries de CRUD
     grade-dia.ts                 # status do dia + grade de horários
-  middleware.ts              # protege todas as rotas
+  middleware.ts              # protege as rotas internas; libera /sala e /api/publico
   app/
     login/                    # tela de login
-    (protected)/                # agenda, novo agendamento, editar/cancelar
-    api/                          # rotas de reservas e disponibilidade
-  components/                   # formulário de reserva, calendário, etc.
+    sala/                      # tela PÚBLICA da porta (read-only, via QR code)
+    (protected)/                # agenda, novo agendamento, editar/cancelar, qrcode
+    api/
+      reservas/                  # CRUD interno (protegido)
+      disponibilidade/            # checagem de conflito interna (protegido)
+      publico/agenda/              # ocupação sem dados pessoais (público)
+  components/                   # formulário de reserva, calendário, QR, etc.
 ```
 
 ## Rodando localmente
@@ -156,6 +163,9 @@ para `/login`.
 - A senha de acesso (`APP_PASSWORD`) nunca é exposta ao cliente — a
   comparação acontece só no servidor, e o cookie de sessão carrega apenas um
   token assinado (HMAC), nunca a senha em si.
+- A tela pública da porta (`/sala`) e sua API (`/api/publico/agenda`) expõem
+  apenas horários livres/ocupados — a query nem seleciona nome, setor ou
+  matrícula, então não há dado pessoal trafegando para quem não tem a senha.
 - Use este projeto como referência/template; ao colocar dados reais de
   pessoas em produção, trate a base conforme a política de dados do seu
   setor/instituição.

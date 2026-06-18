@@ -4,9 +4,21 @@ import {
   horaParaMinutos,
   minutosParaHora,
 } from "@/config/agenda";
-import type { Reserva } from "@/lib/reservas";
 
 export type StatusDia = "livre" | "parcial" | "cheio";
+
+/**
+ * Subconjunto mínimo de uma reserva necessário para montar a grade do
+ * dia e o status. Permite reaproveitar estas funções tanto com a
+ * `Reserva` completa (agenda interna) quanto com a versão enxuta, sem
+ * dados pessoais, usada na visão pública da porta.
+ */
+export interface IntervaloDia {
+  /** "HH:mm" ou "HH:mm:ss" */
+  hora_inicio: string;
+  /** "HH:mm" ou "HH:mm:ss" */
+  hora_fim: string;
+}
 
 /**
  * "Cheio" quando o tempo ocupado (sem contar o buffer, que é só
@@ -15,7 +27,7 @@ export type StatusDia = "livre" | "parcial" | "cheio";
  * buffer obrigatório entre reservas distintas sempre deixa alguma
  * folga entre elas.
  */
-export function calcularStatusDoDia(reservas: Reserva[]): StatusDia {
+export function calcularStatusDoDia(reservas: IntervaloDia[]): StatusDia {
   if (reservas.length === 0) return "livre";
 
   const totalMin = EXPEDIENTE_FIM_MIN - EXPEDIENTE_INICIO_MIN;
@@ -36,22 +48,26 @@ export interface ItemGradeLivre {
   fim: string;
 }
 
-export interface ItemGradeOcupado {
+export interface ItemGradeOcupado<T extends IntervaloDia = IntervaloDia> {
   tipo: "ocupado";
   inicio: string;
   fim: string;
-  reserva: Reserva;
+  reserva: T;
 }
 
-export type ItemGrade = ItemGradeLivre | ItemGradeOcupado;
+export type ItemGrade<T extends IntervaloDia = IntervaloDia> =
+  | ItemGradeLivre
+  | ItemGradeOcupado<T>;
 
 /** Monta a grade do expediente do dia: blocos vagos e ocupados, em ordem. */
-export function construirGradeDoDia(reservas: Reserva[]): ItemGrade[] {
+export function construirGradeDoDia<T extends IntervaloDia>(
+  reservas: T[]
+): ItemGrade<T>[] {
   const ordenadas = [...reservas].sort((a, b) =>
     a.hora_inicio.localeCompare(b.hora_inicio)
   );
 
-  const itens: ItemGrade[] = [];
+  const itens: ItemGrade<T>[] = [];
   let cursor = EXPEDIENTE_INICIO_MIN;
 
   for (const reserva of ordenadas) {

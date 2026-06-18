@@ -52,6 +52,38 @@ export async function listarReservasDoMes(
   `;
 }
 
+/**
+ * Versão enxuta da ocupação de um dia/mês, SEM dados pessoais — usada
+ * na visão pública (QR code da porta). Expõe só os horários ocupados,
+ * nunca quem reservou.
+ */
+export interface OcupacaoPublica {
+  /** "YYYY-MM-DD" */
+  data: string;
+  dia_inteiro: boolean;
+  /** "HH:mm:ss" */
+  hora_inicio: string;
+  /** "HH:mm:ss" */
+  hora_fim: string;
+}
+
+/** Ocupação (sem dados pessoais) do mês de `ano`/`mes` (mes: 1-12). */
+export async function listarOcupacaoDoMes(
+  ano: number,
+  mes: number
+): Promise<OcupacaoPublica[]> {
+  const inicioDoMes = `${ano}-${String(mes).padStart(2, "0")}-01`;
+  return sql<OcupacaoPublica[]>`
+    select
+      data::text as data, dia_inteiro,
+      hora_inicio::text as hora_inicio, hora_fim::text as hora_fim
+    from reservas
+    where data >= ${inicioDoMes}::date
+      and data < (${inicioDoMes}::date + interval '1 month')
+    order by data, hora_inicio
+  `;
+}
+
 export interface ListarProximasOpcoes {
   busca?: string;
   limite?: number;
