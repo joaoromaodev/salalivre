@@ -189,6 +189,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
           onChange={(e) => setNomeResponsavel(e.target.value)}
           aria-invalid={Boolean(erros.nome_responsavel)}
           required
+          className="h-11"
         />
         {erros.nome_responsavel && (
           <p className="text-sm text-destructive">{erros.nome_responsavel}</p>
@@ -204,6 +205,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
             onChange={(e) => setSetor(e.target.value)}
             aria-invalid={Boolean(erros.setor)}
             required
+            className="h-11"
           />
           {erros.setor && (
             <p className="text-sm text-destructive">{erros.setor}</p>
@@ -215,6 +217,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
             id="matricula"
             value={matricula}
             onChange={(e) => setMatricula(e.target.value)}
+            className="h-11"
           />
         </div>
       </div>
@@ -227,11 +230,11 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full justify-start font-normal"
+                className="h-11 w-full justify-start font-normal"
               />
             }
           >
-            <CalendarIcon className="size-4" />
+            <CalendarIcon className="size-4 text-muted-foreground" />
             {data
               ? format(data, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
               : "Selecione uma data"}
@@ -245,6 +248,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
                 setCalendarioAberto(false);
               }}
               disabled={editando ? undefined : { before: inicioDoDiaDeHoje() }}
+              locale={ptBR}
               autoFocus
             />
           </PopoverContent>
@@ -252,7 +256,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
         {erros.data && <p className="text-sm text-destructive">{erros.data}</p>}
       </div>
 
-      <div className="flex items-center justify-between rounded-lg border px-3 py-2.5">
+      <div className="flex items-center justify-between gap-3 rounded-xl border bg-card px-4 py-3 shadow-xs">
         <div>
           <Label htmlFor="dia_inteiro">Dia inteiro</Label>
           <p className="text-sm text-muted-foreground">
@@ -275,7 +279,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
               value={horaInicio}
               onValueChange={(valor) => setHoraInicio(valor ?? "")}
             >
-              <SelectTrigger id="hora_inicio" className="w-full">
+              <SelectTrigger id="hora_inicio" className="h-11 w-full">
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
@@ -297,7 +301,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
               onValueChange={(valor) => setHoraFim(valor ?? "")}
               disabled={!horaInicio}
             >
-              <SelectTrigger id="hora_fim" className="w-full">
+              <SelectTrigger id="hora_fim" className="h-11 w-full">
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
@@ -319,10 +323,10 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
         <div
           className={
             statusDisponibilidade === "conflito"
-              ? "rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
+              ? "rounded-xl border border-ocupado/30 bg-ocupado-surface px-3.5 py-3 text-sm text-ocupado"
               : statusDisponibilidade === "livre"
-                ? "rounded-lg border border-emerald-600/30 bg-emerald-600/5 px-3 py-2.5 text-sm text-emerald-700 dark:text-emerald-500"
-                : "rounded-lg border px-3 py-2.5 text-sm text-muted-foreground"
+                ? "rounded-xl border border-livre/30 bg-livre-surface px-3.5 py-3 text-sm text-livre"
+                : "rounded-xl border px-3.5 py-3 text-sm text-muted-foreground"
           }
         >
           {statusDisponibilidade === "verificando" && (
@@ -374,7 +378,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
         <Button
           type="submit"
           disabled={enviando || statusDisponibilidade === "conflito"}
-          className="flex-1"
+          className="h-11 flex-1"
         >
           {enviando
             ? "Salvando..."
@@ -382,7 +386,12 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
               ? "Salvar alterações"
               : "Criar agendamento"}
         </Button>
-        <Button type="button" variant="outline" render={<Link href="/agenda" />}>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11"
+          render={<Link href="/agenda" />}
+        >
           Cancelar
         </Button>
       </div>

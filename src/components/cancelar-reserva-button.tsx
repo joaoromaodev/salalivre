@@ -54,7 +54,9 @@ export function CancelarReservaButton({
   return (
     <AlertDialog>
       <AlertDialogTrigger
-        render={<Button type="button" variant="destructive" className="w-full" />}
+        render={
+          <Button type="button" variant="destructive" className="h-11 w-full" />
+        }
       >
         <Trash2Icon className="size-4" />
         Cancelar reserva
