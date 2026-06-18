@@ -7,12 +7,23 @@ import { SESSION_COOKIE_NAME, tokenSessaoValido } from "@/lib/auth";
  * - /sala e /api/publico/*: visão pública e read-only da ocupação da
  *   sala (a "tela da porta" acessada via QR code). Mostra só os
  *   horários ocupados, nunca dados pessoais nem ações de escrita.
+ * - Assets da PWA (manifest, service worker, página offline e ícones):
+ *   precisam ser acessíveis sem sessão para o app ser instalável e o
+ *   SW registrar; não contêm dado sensível.
  */
+const ARQUIVOS_PWA_PUBLICOS = new Set([
+  "/manifest.webmanifest",
+  "/sw.js",
+  "/offline.html",
+]);
+
 function ehRotaPublica(pathname: string): boolean {
   return (
     pathname === "/login" ||
     pathname === "/sala" ||
-    pathname.startsWith("/api/publico/")
+    pathname.startsWith("/api/publico/") ||
+    pathname.startsWith("/icons/") ||
+    ARQUIVOS_PWA_PUBLICOS.has(pathname)
   );
 }
 
