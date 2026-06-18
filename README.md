@@ -15,8 +15,8 @@ A peça central é garantir, **no banco de dados**, que a sala nunca seja
 reservada em dobro — mesmo se duas pessoas da equipe cadastrarem reservas ao
 mesmo tempo a partir de celulares diferentes. Isso é feito com uma
 [`EXCLUDE` constraint](https://www.postgresql.org/docs/current/sql-createtable.html#SQL-CREATETABLE-EXCLUDE)
-do PostgreSQL sobre um intervalo de tempo (`tsrange`) que já embute o buffer
-de tolerância entre reservas — não é uma validação só de front-end.
+do PostgreSQL sobre um intervalo de tempo (`tsrange`) — não é uma validação
+só de front-end.
 
 ## Screenshots
 
@@ -58,19 +58,22 @@ Configuração central em [`src/config/agenda.ts`](src/config/agenda.ts):
 | Parâmetro             | Valor padrão  |
 | ---------------------- | ------------- |
 | Expediente              | 08:00 – 17:00 |
-| Tamanho do slot          | 30 minutos    |
-| Buffer entre reservas    | 10 minutos    |
 
 - A sala é exclusiva: duas reservas nunca podem se sobrepor no mesmo dia.
-- O buffer "incha" o fim de cada reserva — uma reserva 14:00–15:00 bloqueia,
-  na prática, até 15:10, para dar tempo de um grupo sair e o outro entrar.
+- O horário é livre dentro do expediente: qualquer minuto (ex.: 15:02,
+  16:20), não só múltiplos de 30 min.
+- Não há buffer entre reservas — duas reservas só conflitam se de fato se
+  sobrepõem. Reservas encostadas (uma termina quando a outra começa) são
+  permitidas.
 - "Dia inteiro" é só uma reserva que ocupa o expediente todo (08:00–17:00).
-- Não é possível criar reserva em data/horário no passado (mas o histórico
+- Pode-se agendar para hoje a qualquer momento (inclusive na hora, sem
+  antecedência); só não é possível agendar em datas passadas (o histórico
   continua visível e pode ser consultado).
 
 Essas regras são validadas no formulário (feedback rápido) **e** garantidas
 no banco via `CHECK`/`EXCLUDE` constraints — a validação de front nunca é a
-única linha de defesa. Veja [`migrations/001_init.sql`](migrations/001_init.sql).
+única linha de defesa. Veja
+[`migrations/`](migrations/) (`001_init.sql` + `002_remove_buffer.sql`).
 
 ## Estrutura de pastas
 
@@ -80,7 +83,7 @@ scripts/
   migrate.ts             # aplica as migrations via DATABASE_URL
   seed.ts                 # popula reservas fictícias para demonstração
 src/
-  config/agenda.ts         # expediente, slot e buffer centralizados
+  config/agenda.ts         # expediente centralizado
   db/client.ts              # cliente postgres.js (DATABASE_URL)
   lib/
     auth.ts                  # sessão por senha única (cookie assinado)

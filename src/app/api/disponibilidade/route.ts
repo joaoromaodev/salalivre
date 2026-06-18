@@ -8,8 +8,8 @@ const HORA_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
  * Checagem de conflito em tempo real para feedback no formulário,
  * ANTES de submeter. Não é a fonte da verdade contra conflito de
  * horário — essa garantia é da exclusion constraint do banco
- * (migrations/001_init.sql); esta rota só consulta as reservas do dia
- * e replica a mesma regra de buffer em JS (src/lib/conflito.ts).
+ * (migrations/001 + 002); esta rota só consulta as reservas do dia e
+ * replica a mesma regra de sobreposição em JS (src/lib/conflito.ts).
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
