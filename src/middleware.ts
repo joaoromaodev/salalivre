@@ -17,6 +17,9 @@ export async function middleware(request: NextRequest) {
   const sessaoValida = await tokenSessaoValido(token);
 
   if (!sessaoValida) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+    }
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirecionar", pathname);
     return NextResponse.redirect(loginUrl);
