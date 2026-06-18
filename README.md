@@ -1,36 +1,165 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SalaLivre
 
-## Getting Started
+Sistema web de agendamento para **uma sala de reunião de uso exclusivo**
+(nunca dividida entre dois grupos ao mesmo tempo). Pensado para um setor que
+gerencia a sala em nome de quem vai usá-la — não há contas de usuário, só uma
+senha única compartilhada pela equipe gestora.
 
-First, run the development server:
+> Projeto de portfólio com uso real interno: todo o código é público, mas
+> nenhum dado real (nomes, setores, senhas) aparece em lugar nenhum do
+> repositório — veja [Privacidade e dados](#privacidade-e-dados-lgpd).
+
+## Por que este projeto
+
+A peça central é garantir, **no banco de dados**, que a sala nunca seja
+reservada em dobro — mesmo se duas pessoas da equipe cadastrarem reservas ao
+mesmo tempo a partir de celulares diferentes. Isso é feito com uma
+[`EXCLUDE` constraint](https://www.postgresql.org/docs/current/sql-createtable.html#SQL-CREATETABLE-EXCLUDE)
+do PostgreSQL sobre um intervalo de tempo (`tsrange`) que já embute o buffer
+de tolerância entre reservas — não é uma validação só de front-end.
+
+## Screenshots
+
+> _Adicione capturas de tela aqui após o primeiro deploy:_
+> `docs/screenshot-login.png`, `docs/screenshot-agenda.png`,
+> `docs/screenshot-novo.png`.
+
+## Stack
+
+- **Next.js 15** (App Router) + **TypeScript**
+- **Tailwind CSS v4** + **shadcn/ui**
+- **PostgreSQL** via [`postgres`](https://github.com/porsager/postgres) (não
+  usa SDK proprietário de nenhum provedor — só uma connection string)
+- Banco recomendado: **[Neon](https://neon.tech)** (free tier; faz
+  autosuspend mas resume sozinho na primeira conexão, então o link nunca fica
+  "morto")
+- Deploy: **Vercel**
+
+## Funcionalidades
+
+- **Novo agendamento**: formulário com feedback de disponibilidade em tempo
+  real, antes mesmo de submeter.
+- **Agenda**: calendário mensal com indicação visual por dia (livre /
+  parcial / cheio), grade do expediente do dia selecionado e lista de
+  próximas reservas com busca por nome ou setor.
+- **Editar / cancelar**: a partir de qualquer reserva listada, com
+  confirmação antes de cancelar.
+- **Acesso por senha única**: todas as rotas — inclusive a consulta da
+  agenda — exigem um cookie de sessão assinado; sem ele, redireciona para
+  `/login`.
+
+## Regras de negócio
+
+Configuração central em [`src/config/agenda.ts`](src/config/agenda.ts):
+
+| Parâmetro             | Valor padrão  |
+| ---------------------- | ------------- |
+| Expediente              | 08:00 – 17:00 |
+| Tamanho do slot          | 30 minutos    |
+| Buffer entre reservas    | 10 minutos    |
+
+- A sala é exclusiva: duas reservas nunca podem se sobrepor no mesmo dia.
+- O buffer "incha" o fim de cada reserva — uma reserva 14:00–15:00 bloqueia,
+  na prática, até 15:10, para dar tempo de um grupo sair e o outro entrar.
+- "Dia inteiro" é só uma reserva que ocupa o expediente todo (08:00–17:00).
+- Não é possível criar reserva em data/horário no passado (mas o histórico
+  continua visível e pode ser consultado).
+
+Essas regras são validadas no formulário (feedback rápido) **e** garantidas
+no banco via `CHECK`/`EXCLUDE` constraints — a validação de front nunca é a
+única linha de defesa. Veja [`migrations/001_init.sql`](migrations/001_init.sql).
+
+## Estrutura de pastas
+
+```
+migrations/             # SQL puro, versionado (schema + exclusion constraint)
+scripts/
+  migrate.ts             # aplica as migrations via DATABASE_URL
+  seed.ts                 # popula reservas fictícias para demonstração
+src/
+  config/agenda.ts         # expediente, slot e buffer centralizados
+  db/client.ts              # cliente postgres.js (DATABASE_URL)
+  lib/
+    auth.ts                  # sessão por senha única (cookie assinado)
+    validacao.ts              # schemas zod compartilhados front/back
+    conflito.ts                # checagem de conflito em JS (espelha o banco)
+    reservas.ts                 # queries de CRUD
+    grade-dia.ts                 # status do dia + grade de horários
+  middleware.ts              # protege todas as rotas
+  app/
+    login/                    # tela de login
+    (protected)/                # agenda, novo agendamento, editar/cancelar
+    api/                          # rotas de reservas e disponibilidade
+  components/                   # formulário de reserva, calendário, etc.
+```
+
+## Rodando localmente
+
+### 1. Banco de dados (Neon)
+
+1. Crie uma conta gratuita em [neon.tech](https://neon.tech) e um novo
+   projeto/banco.
+2. Copie a connection string (formato
+   `postgres://usuario:senha@host/banco?sslmode=require`).
+
+Qualquer outro Postgres funciona do mesmo jeito — basta trocar
+`DATABASE_URL`. Não há nada específico de provedor no código (não usa
+`@supabase/supabase-js` nem SDKs proprietários, só `postgres.js` puro).
+
+### 2. Variáveis de ambiente
+
+```bash
+cp .env.example .env.local
+```
+
+Preencha `DATABASE_URL`, `APP_PASSWORD` (a senha de acesso ao sistema) e
+`COOKIE_SECRET` (um valor aleatório longo — `openssl rand -base64 32` gera
+um bom valor).
+
+### 3. Instalar dependências, migrar e popular
+
+```bash
+npm install
+npm run db:migrate   # cria a tabela reservas + exclusion constraint
+npm run db:seed       # opcional: popula reservas fictícias de demonstração
+```
+
+### 4. Rodar em desenvolvimento
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) — você será redirecionado
+para `/login`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy na Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Suba o repositório no GitHub e importe o projeto na
+   [Vercel](https://vercel.com/new).
+2. Configure as variáveis de ambiente do projeto na Vercel:
+   `DATABASE_URL`, `APP_PASSWORD`, `COOKIE_SECRET`.
+3. Antes (ou depois) do primeiro deploy, rode a migration apontando para o
+   banco de produção:
+   ```bash
+   DATABASE_URL="<connection string de produção>" npm run db:migrate
+   ```
+4. Deploy. Pronto — o middleware já protege todas as rotas em produção.
 
-## Learn More
+## Privacidade e dados (LGPD)
 
-To learn more about Next.js, take a look at the following resources:
+- Nenhum dado real (nome, setor, matrícula) existe neste repositório — o
+  script de seed usa apenas nomes inventados e setores genéricos (`Setor A`,
+  `Setor B`...).
+- `.env.local` nunca é commitado (`.gitignore`); apenas `.env.example` com
+  placeholders.
+- A senha de acesso (`APP_PASSWORD`) nunca é exposta ao cliente — a
+  comparação acontece só no servidor, e o cookie de sessão carrega apenas um
+  token assinado (HMAC), nunca a senha em si.
+- Use este projeto como referência/template; ao colocar dados reais de
+  pessoas em produção, trate a base conforme a política de dados do seu
+  setor/instituição.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Licença
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](LICENSE).
