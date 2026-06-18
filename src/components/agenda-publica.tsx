@@ -142,8 +142,13 @@ export function AgendaPublica() {
     };
   }, [agora, ocupacaoPorData]);
 
-  const pontoStatus =
-    "after:absolute after:bottom-1 after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:rounded-full";
+  // Pontos de status no dia (ver explicação em agenda-view.tsx): pseudo
+  // ::after na célula, z-20 para aparecer sobre o dia selecionado; verde
+  // só no dia livre quando selecionado.
+  const PONTO =
+    "after:absolute after:bottom-1.5 after:left-1/2 after:z-20 after:size-1.5 after:-translate-x-1/2 after:rounded-full after:content-[''] data-[selected=true]:after:ring-1 data-[selected=true]:after:ring-primary-foreground/80";
+  const PONTO_LIVRE_SEL =
+    "data-[selected=true]:after:absolute data-[selected=true]:after:bottom-1.5 data-[selected=true]:after:left-1/2 data-[selected=true]:after:z-20 data-[selected=true]:after:size-1.5 data-[selected=true]:after:-translate-x-1/2 data-[selected=true]:after:rounded-full data-[selected=true]:after:content-[''] data-[selected=true]:after:bg-livre data-[selected=true]:after:ring-1 data-[selected=true]:after:ring-primary-foreground/80";
 
   const heroEstilo =
     statusAgora.tipo === "ocupada"
@@ -206,9 +211,9 @@ export function AgendaPublica() {
             cheio: diasCheios,
           }}
           modifiersClassNames={{
-            livre: "",
-            parcial: `${pontoStatus} after:bg-parcial`,
-            cheio: `${pontoStatus} after:bg-ocupado`,
+            livre: PONTO_LIVRE_SEL,
+            parcial: `${PONTO} after:bg-parcial`,
+            cheio: `${PONTO} after:bg-ocupado`,
           }}
           locale={ptBR}
           className="w-full p-0"
