@@ -56,3 +56,21 @@ export function gerarSlotsExpediente(): string[] {
   }
   return slots;
 }
+
+/**
+ * Todas as fronteiras de horário do expediente, incluindo o fim
+ * (ex.: 08:00, 08:30, ..., 17:00) — usado para popular as opções de
+ * hora de término no formulário (que pode terminar exatamente no
+ * fim do expediente, diferente do horário de início).
+ */
+export function gerarLimitesExpediente(): string[] {
+  const limites: string[] = [];
+  for (
+    let m = EXPEDIENTE_INICIO_MIN;
+    m <= EXPEDIENTE_FIM_MIN;
+    m += AGENDA_CONFIG.SLOT_MINUTOS
+  ) {
+    limites.push(minutosParaHora(m));
+  }
+  return limites;
+}
