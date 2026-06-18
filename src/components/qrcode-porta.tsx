@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { CopyIcon, PrinterIcon } from "lucide-react";
+import { CalendarCheckIcon, CopyIcon, PrinterIcon, ScanLineIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -42,26 +42,40 @@ export function QrCodePorta() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col items-center gap-4 rounded-xl border bg-card p-6 print-area">
-        <div className="text-center">
-          <p className="text-base font-semibold">Sala de reunião</p>
-          <p className="text-sm text-muted-foreground">
-            Aponte a câmera para ver os horários disponíveis
-          </p>
+      <div className="print-area mx-auto flex max-w-sm flex-col items-center gap-5 rounded-2xl border bg-card p-7 text-center shadow-sm">
+        <div className="flex flex-col items-center gap-2">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <CalendarCheckIcon className="size-5" />
+          </span>
+          <div>
+            <p className="text-lg font-semibold tracking-tight">
+              Sala de reunião
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Veja os horários livres e ocupados
+            </p>
+          </div>
         </div>
 
         {qrDataUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={qrDataUrl}
-            alt="QR code para a agenda pública da sala"
-            className="size-64 rounded-lg"
-            width={256}
-            height={256}
-          />
+          <div className="rounded-2xl border bg-white p-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={qrDataUrl}
+              alt="QR code para a agenda pública da sala"
+              className="size-60"
+              width={240}
+              height={240}
+            />
+          </div>
         ) : (
-          <Skeleton className="size-64 rounded-lg" />
+          <Skeleton className="size-[17.25rem] rounded-2xl" />
         )}
+
+        <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+          <ScanLineIcon className="size-4 text-primary" />
+          Aponte a câmera do celular
+        </p>
 
         <p className="text-center text-xs break-all text-muted-foreground">
           {urlPublica}
@@ -71,7 +85,7 @@ export function QrCodePorta() {
       <div className="flex gap-2 print:hidden">
         <Button
           type="button"
-          className="flex-1"
+          className="h-11 flex-1"
           onClick={() => window.print()}
           disabled={!qrDataUrl}
         >
@@ -81,6 +95,7 @@ export function QrCodePorta() {
         <Button
           type="button"
           variant="outline"
+          className="h-11"
           onClick={copiarLink}
           disabled={!urlPublica}
         >

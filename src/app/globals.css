@@ -39,6 +39,16 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Cores semânticas de status da sala (theme-aware) — usadas em
+     pontos do calendário, badges, grade do dia e disponibilidade. */
+  --color-livre: var(--livre);
+  --color-livre-surface: var(--livre-surface);
+  --color-parcial: var(--parcial);
+  --color-parcial-surface: var(--parcial-surface);
+  --color-ocupado: var(--ocupado);
+  --color-ocupado-surface: var(--ocupado-surface);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -48,73 +58,96 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Paleta minimalista moderna: neutros levemente frios (slate, hue 264)
+ * + accent índigo (hue 274). Status: esmeralda / âmbar / vermelho.
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.99 0.002 264);
+  --foreground: oklch(0.21 0.02 271);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.21 0.02 271);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.21 0.02 271);
+  --primary: oklch(0.54 0.205 277);
+  --primary-foreground: oklch(0.99 0.003 277);
+  --secondary: oklch(0.967 0.004 264);
+  --secondary-foreground: oklch(0.3 0.02 271);
+  --muted: oklch(0.974 0.003 264);
+  --muted-foreground: oklch(0.55 0.018 264);
+  --accent: oklch(0.955 0.016 277);
+  --accent-foreground: oklch(0.45 0.13 277);
+  --destructive: oklch(0.58 0.21 25);
+  --border: oklch(0.922 0.005 264);
+  --input: oklch(0.922 0.005 264);
+  --ring: oklch(0.54 0.205 277);
+
+  --livre: oklch(0.6 0.13 162);
+  --livre-surface: oklch(0.95 0.04 162);
+  --parcial: oklch(0.69 0.14 70);
+  --parcial-surface: oklch(0.957 0.05 80);
+  --ocupado: oklch(0.58 0.19 25);
+  --ocupado-surface: oklch(0.955 0.035 25);
+
+  --chart-1: oklch(0.54 0.205 277);
+  --chart-2: oklch(0.6 0.13 162);
+  --chart-3: oklch(0.69 0.14 70);
+  --chart-4: oklch(0.58 0.19 25);
+  --chart-5: oklch(0.55 0.018 264);
+
+  --radius: 0.7rem;
+
+  --sidebar: oklch(0.99 0.002 264);
+  --sidebar-foreground: oklch(0.21 0.02 271);
+  --sidebar-primary: oklch(0.54 0.205 277);
+  --sidebar-primary-foreground: oklch(0.99 0.003 277);
+  --sidebar-accent: oklch(0.955 0.016 277);
+  --sidebar-accent-foreground: oklch(0.45 0.13 277);
+  --sidebar-border: oklch(0.922 0.005 264);
+  --sidebar-ring: oklch(0.54 0.205 277);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: oklch(0.17 0.008 271);
+  --foreground: oklch(0.97 0.003 264);
+  --card: oklch(0.21 0.01 271);
+  --card-foreground: oklch(0.97 0.003 264);
+  --popover: oklch(0.21 0.01 271);
+  --popover-foreground: oklch(0.97 0.003 264);
+  --primary: oklch(0.62 0.19 274);
+  --primary-foreground: oklch(0.99 0.003 277);
+  --secondary: oklch(0.27 0.012 271);
+  --secondary-foreground: oklch(0.97 0.003 264);
+  --muted: oklch(0.27 0.012 271);
+  --muted-foreground: oklch(0.71 0.014 264);
+  --accent: oklch(0.3 0.04 277);
+  --accent-foreground: oklch(0.9 0.04 277);
+  --destructive: oklch(0.7 0.19 25);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.62 0.19 274);
+
+  --livre: oklch(0.74 0.15 162);
+  --livre-surface: oklch(0.28 0.05 162);
+  --parcial: oklch(0.81 0.13 80);
+  --parcial-surface: oklch(0.3 0.05 80);
+  --ocupado: oklch(0.72 0.17 25);
+  --ocupado-surface: oklch(0.3 0.06 25);
+
+  --chart-1: oklch(0.62 0.19 274);
+  --chart-2: oklch(0.74 0.15 162);
+  --chart-3: oklch(0.81 0.13 80);
+  --chart-4: oklch(0.72 0.17 25);
+  --chart-5: oklch(0.71 0.014 264);
+
+  --sidebar: oklch(0.21 0.01 271);
+  --sidebar-foreground: oklch(0.97 0.003 264);
+  --sidebar-primary: oklch(0.62 0.19 274);
+  --sidebar-primary-foreground: oklch(0.99 0.003 277);
+  --sidebar-accent: oklch(0.3 0.04 277);
+  --sidebar-accent-foreground: oklch(0.9 0.04 277);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: oklch(0.62 0.19 274);
 }
 
 @layer base {
@@ -123,11 +156,13 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
   }
   html {
     @apply font-sans;
   }
 }
+
 /* Ao imprimir o QR da porta, esconde tudo menos o cartão imprimível
    (.print-area) e o centraliza na folha. */
 @media print {
@@ -143,7 +178,7 @@
     inset: 0;
     margin: auto;
     width: 100%;
-    max-width: 24rem;
+    max-width: 22rem;
     height: max-content;
     border: none;
     box-shadow: none;

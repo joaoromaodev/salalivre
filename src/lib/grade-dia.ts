@@ -21,11 +21,9 @@ export interface IntervaloDia {
 }
 
 /**
- * "Cheio" quando o tempo ocupado (sem contar o buffer, que é só
- * tolerância entre reservas) já cobre o expediente inteiro — na
- * prática, isso só acontece com uma reserva de dia inteiro, já que o
- * buffer obrigatório entre reservas distintas sempre deixa alguma
- * folga entre elas.
+ * "Cheio" quando o tempo ocupado já cobre o expediente inteiro — seja
+ * por uma reserva de dia inteiro, seja por reservas que juntas somam
+ * todo o expediente.
  */
 export function calcularStatusDoDia(reservas: IntervaloDia[]): StatusDia {
   if (reservas.length === 0) return "livre";

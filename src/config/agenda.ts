@@ -5,23 +5,22 @@
  * formulário de novo agendamento, grade de horários da agenda e nas
  * regras de conflito calculadas no front-end.
  *
- * A garantia definitiva contra sobreposição de horários (com o buffer
- * já embutido) vive no banco de dados, na exclusion constraint da
- * migration `001_init.sql` — os valores abaixo precisam ficar em sincronia
- * manual com aquele SQL caso sejam alterados.
+ * A garantia definitiva contra sobreposição de horários vive no banco
+ * de dados, na exclusion constraint (migrations/001 + 002) — os valores
+ * abaixo precisam ficar em sincronia manual com aquele SQL caso sejam
+ * alterados.
+ *
+ * Não há mais buffer entre reservas (removido na migration 002): duas
+ * reservas só conflitam se os horários realmente se sobrepõem. O
+ * horário é livre dentro do expediente (qualquer minuto, ex.: 15:02).
  */
 export const AGENDA_CONFIG = {
   /** Horário de início do expediente, no formato "HH:mm". */
   EXPEDIENTE_INICIO: "08:00",
   /** Horário de fim do expediente, no formato "HH:mm". */
   EXPEDIENTE_FIM: "17:00",
-  /** Duração de cada slot selecionável no formulário, em minutos. */
+  /** Passo dos botões "+/-" do campo de hora, em minutos. */
   SLOT_MINUTOS: 30,
-  /**
-   * Tolerância mínima, em minutos, entre o fim de uma reserva e o
-   * início da próxima — tempo para um grupo sair e o outro entrar.
-   */
-  BUFFER_MINUTOS: 10,
 } as const;
 
 /** Converte "HH:mm" em minutos desde 00:00. */

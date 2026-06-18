@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -13,7 +13,7 @@ import {
   Loader2Icon,
 } from "lucide-react";
 
-import { AGENDA_CONFIG, gerarLimitesExpediente } from "@/config/agenda";
+import { AGENDA_CONFIG } from "@/config/agenda";
 import { reservaInputSchema, reservaUpdateSchema } from "@/lib/validacao";
 import type { Reserva } from "@/lib/reservas";
 import { useDisponibilidade } from "@/hooks/use-disponibilidade";
@@ -29,17 +29,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const LIMITES_EXPEDIENTE = gerarLimitesExpediente();
-const OPCOES_INICIO = LIMITES_EXPEDIENTE.slice(0, -1);
-
 function dataStringParaDate(data: string): Date {
   const [ano, mes, dia] = data.split("-").map(Number);
   return new Date(ano, mes - 1, dia);
@@ -87,14 +76,6 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
 
   const [erros, setErros] = useState<Record<string, string>>({});
   const [enviando, setEnviando] = useState(false);
-
-  const opcoesFim = useMemo(
-    () =>
-      LIMITES_EXPEDIENTE.filter(
-        (h) => h > (horaInicio || AGENDA_CONFIG.EXPEDIENTE_INICIO)
-      ),
-    [horaInicio]
-  );
 
   useEffect(() => {
     if (horaFim && horaFim <= horaInicio) {
@@ -189,6 +170,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
           onChange={(e) => setNomeResponsavel(e.target.value)}
           aria-invalid={Boolean(erros.nome_responsavel)}
           required
+          className="h-11"
         />
         {erros.nome_responsavel && (
           <p className="text-sm text-destructive">{erros.nome_responsavel}</p>
@@ -204,6 +186,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
             onChange={(e) => setSetor(e.target.value)}
             aria-invalid={Boolean(erros.setor)}
             required
+            className="h-11"
           />
           {erros.setor && (
             <p className="text-sm text-destructive">{erros.setor}</p>
@@ -215,6 +198,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
             id="matricula"
             value={matricula}
             onChange={(e) => setMatricula(e.target.value)}
+            className="h-11"
           />
         </div>
       </div>
@@ -227,11 +211,11 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full justify-start font-normal"
+                className="h-11 w-full justify-start font-normal"
               />
             }
           >
-            <CalendarIcon className="size-4" />
+            <CalendarIcon className="size-4 text-muted-foreground" />
             {data
               ? format(data, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
               : "Selecione uma data"}
@@ -245,6 +229,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
                 setCalendarioAberto(false);
               }}
               disabled={editando ? undefined : { before: inicioDoDiaDeHoje() }}
+              locale={ptBR}
               autoFocus
             />
           </PopoverContent>
@@ -252,7 +237,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
         {erros.data && <p className="text-sm text-destructive">{erros.data}</p>}
       </div>
 
-      <div className="flex items-center justify-between rounded-lg border px-3 py-2.5">
+      <div className="flex items-center justify-between gap-3 rounded-xl border bg-card px-4 py-3 shadow-xs">
         <div>
           <Label htmlFor="dia_inteiro">Dia inteiro</Label>
           <p className="text-sm text-muted-foreground">
@@ -271,58 +256,53 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label htmlFor="hora_inicio">Início</Label>
-            <Select
+            <Input
+              id="hora_inicio"
+              type="time"
               value={horaInicio}
-              onValueChange={(valor) => setHoraInicio(valor ?? "")}
-            >
-              <SelectTrigger id="hora_inicio" className="w-full">
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                {OPCOES_INICIO.map((hora) => (
-                  <SelectItem key={hora} value={hora}>
-                    {hora}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              min={AGENDA_CONFIG.EXPEDIENTE_INICIO}
+              max={AGENDA_CONFIG.EXPEDIENTE_FIM}
+              onChange={(e) => setHoraInicio(e.target.value)}
+              aria-invalid={Boolean(erros.hora_inicio)}
+              className="h-11"
+            />
             {erros.hora_inicio && (
               <p className="text-sm text-destructive">{erros.hora_inicio}</p>
             )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="hora_fim">Término</Label>
-            <Select
+            <Input
+              id="hora_fim"
+              type="time"
               value={horaFim}
-              onValueChange={(valor) => setHoraFim(valor ?? "")}
-              disabled={!horaInicio}
-            >
-              <SelectTrigger id="hora_fim" className="w-full">
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                {opcoesFim.map((hora) => (
-                  <SelectItem key={hora} value={hora}>
-                    {hora}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              min={horaInicio || AGENDA_CONFIG.EXPEDIENTE_INICIO}
+              max={AGENDA_CONFIG.EXPEDIENTE_FIM}
+              onChange={(e) => setHoraFim(e.target.value)}
+              aria-invalid={Boolean(erros.hora_fim)}
+              className="h-11"
+            />
             {erros.hora_fim && (
               <p className="text-sm text-destructive">{erros.hora_fim}</p>
             )}
           </div>
         </div>
       )}
+      {!diaInteiro && (
+        <p className="-mt-3 text-xs text-muted-foreground">
+          Qualquer horário entre {AGENDA_CONFIG.EXPEDIENTE_INICIO} e{" "}
+          {AGENDA_CONFIG.EXPEDIENTE_FIM}.
+        </p>
+      )}
 
       {mostrarStatusDisponibilidade && (
         <div
           className={
             statusDisponibilidade === "conflito"
-              ? "rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive"
+              ? "rounded-xl border border-ocupado/30 bg-ocupado-surface px-3.5 py-3 text-sm text-ocupado"
               : statusDisponibilidade === "livre"
-                ? "rounded-lg border border-emerald-600/30 bg-emerald-600/5 px-3 py-2.5 text-sm text-emerald-700 dark:text-emerald-500"
-                : "rounded-lg border px-3 py-2.5 text-sm text-muted-foreground"
+                ? "rounded-xl border border-livre/30 bg-livre-surface px-3.5 py-3 text-sm text-livre"
+                : "rounded-xl border px-3.5 py-3 text-sm text-muted-foreground"
           }
         >
           {statusDisponibilidade === "verificando" && (
@@ -374,7 +354,7 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
         <Button
           type="submit"
           disabled={enviando || statusDisponibilidade === "conflito"}
-          className="flex-1"
+          className="h-11 flex-1"
         >
           {enviando
             ? "Salvando..."
@@ -382,7 +362,12 @@ export function ReservaForm({ reservaExistente }: ReservaFormProps) {
               ? "Salvar alterações"
               : "Criar agendamento"}
         </Button>
-        <Button type="button" variant="outline" render={<Link href="/agenda" />}>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11"
+          render={<Link href="/agenda" />}
+        >
           Cancelar
         </Button>
       </div>

@@ -3,8 +3,8 @@ const EXCLUSION_VIOLATION = "23P01";
 
 /**
  * Verdadeiro quando o erro veio da EXCLUDE USING gist da tabela
- * `reservas` (migrations/001_init.sql) — ou seja, o horário pedido
- * conflita (considerando o buffer) com outra reserva já existente.
+ * `reservas` (migrations/001 + 002) — ou seja, o horário pedido se
+ * sobrepõe ao de outra reserva já existente.
  */
 export function isExclusionViolation(erro: unknown): boolean {
   return (

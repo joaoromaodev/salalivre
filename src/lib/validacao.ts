@@ -79,21 +79,26 @@ export const reservaInputSchema = z
       });
     }
 
-    const inicioDataHora = new Date(`${dados.data}T${dados.hora_inicio}:00`);
-    if (Number.isNaN(inicioDataHora.getTime())) {
+    // Bloqueia apenas DATAS no passado (dias anteriores a hoje). É
+    // permitido agendar para hoje em qualquer horário — inclusive "na
+    // hora", sem exigir antecedência.
+    const dataReserva = new Date(`${dados.data}T00:00:00`);
+    if (Number.isNaN(dataReserva.getTime())) {
       ctx.addIssue({
         code: "custom",
         path: ["data"],
-        message: "Data ou hora inválida.",
+        message: "Data inválida.",
       });
       return;
     }
 
-    if (inicioDataHora.getTime() < Date.now()) {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    if (dataReserva.getTime() < hoje.getTime()) {
       ctx.addIssue({
         code: "custom",
         path: ["data"],
-        message: "Não é possível agendar em uma data/horário no passado.",
+        message: "Não é possível agendar em uma data no passado.",
       });
     }
   });
