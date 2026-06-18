@@ -138,31 +138,31 @@ export function AgendaView() {
 
       <TabsContent value="calendario" className="space-y-5">
         <div className="rounded-2xl border bg-card p-3 shadow-xs">
-          <div className="flex justify-center">
-            <Calendar
-              mode="single"
-              month={mesAtual}
-              onMonthChange={setMesAtual}
-              selected={diaSelecionado}
-              onSelect={(data) => data && setDiaSelecionado(data)}
-              disabled={carregandoMes}
-              modifiers={{
-                livre: diasLivres,
-                parcial: diasParciais,
-                cheio: diasCheios,
-              }}
-              modifiersClassNames={{
-                livre: `${pontoStatus} after:bg-livre`,
-                parcial: `${pontoStatus} after:bg-parcial`,
-                cheio: `${pontoStatus} after:bg-ocupado`,
-              }}
-              locale={ptBR}
-              className="[--cell-size:--spacing(10)]"
-            />
-          </div>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t pt-3 text-xs text-muted-foreground">
+          <Calendar
+            mode="single"
+            month={mesAtual}
+            onMonthChange={setMesAtual}
+            selected={diaSelecionado}
+            onSelect={(data) => data && setDiaSelecionado(data)}
+            disabled={carregandoMes}
+            modifiers={{
+              livre: diasLivres,
+              parcial: diasParciais,
+              cheio: diasCheios,
+            }}
+            modifiersClassNames={{
+              livre: "",
+              parcial: `${pontoStatus} after:bg-parcial`,
+              cheio: `${pontoStatus} after:bg-ocupado`,
+            }}
+            locale={ptBR}
+            className="w-full p-0"
+            classNames={{ root: "w-full" }}
+          />
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t pt-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-livre" /> Livre
+              <span className="size-2 rounded-full ring-1 ring-inset ring-muted-foreground/40" />{" "}
+              Livre
             </span>
             <span className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-parcial" /> Parcial
