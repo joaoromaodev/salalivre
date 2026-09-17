@@ -9,6 +9,9 @@ senha única compartilhada pela equipe gestora.
 > nenhum dado real (nomes, setores, senhas) aparece em lugar nenhum do
 > repositório — veja [Privacidade e dados](#privacidade-e-dados-lgpd).
 
+📚 **Documentação técnica completa** (arquitetura, modelo de dados, regras de
+negócio, API, segurança, PWA, deploy): [`docs/`](docs/README.md).
+
 ## Por que este projeto
 
 A peça central é garantir, **no banco de dados**, que a sala nunca seja

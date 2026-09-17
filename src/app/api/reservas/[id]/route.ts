@@ -5,7 +5,7 @@ import { atualizarReserva, buscarReservaPorId, cancelarReserva } from "@/lib/res
 import { reservaUpdateSchema } from "@/lib/validacao";
 
 const MENSAGEM_CONFLITO =
-  "Esse horário conflita com outra reserva já existente (considerando os 10 minutos de tolerância entre reservas).";
+  "Esse horário se sobrepõe ao de outra reserva já existente.";
 
 interface RotaParams {
   params: Promise<{ id: string }>;

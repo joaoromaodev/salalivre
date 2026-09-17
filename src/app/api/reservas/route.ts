@@ -10,7 +10,7 @@ import {
 import { reservaInputSchema } from "@/lib/validacao";
 
 const MENSAGEM_CONFLITO =
-  "Esse horário conflita com outra reserva já existente (considerando os 10 minutos de tolerância entre reservas).";
+  "Esse horário se sobrepõe ao de outra reserva já existente.";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
